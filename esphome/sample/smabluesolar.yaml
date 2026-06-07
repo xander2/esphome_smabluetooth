@@ -74,6 +74,9 @@ sensor:
     sma_inverter_password: !secret sma_stream_password
     sma_inverter_delay_values: 800ms
 
+    # Margin after sunset before night mode engages (default 30min — extends sunset so readings drop to zero naturally)
+    # sma_inverter_night_margin: 30min
+
     inverter_status: 
       name: "Inverter Status"
 

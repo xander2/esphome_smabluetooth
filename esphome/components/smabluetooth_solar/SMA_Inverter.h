@@ -391,7 +391,8 @@ class ESP32_SMA_Inverter {
     // ---- Configuration (written once in setup(), read-only afterward) ----
     uint8_t  smaBTAddress[6];
     char     smaInvPass[12];
-    uint32_t delay_values_ms_ = 500;
+    uint32_t delay_values_ms_   = 500;
+    float    night_margin_min_  = 30.0f;  // minutes after sunset before night mode engages
 
     // ---- Packet buffers ----
     uint8_t  btrdBuf[COMMBUFSIZE];
