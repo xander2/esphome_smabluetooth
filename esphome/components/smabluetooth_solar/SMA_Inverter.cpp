@@ -649,8 +649,8 @@ E_RC ESP32_SMA_Inverter::getPacket(const uint8_t expAddr[6], int wait4Command) {
             if (isValidSender(expAddr, pL1Hdr->SourceAddr)) {
                 rc = E_OK;
 
-                ESP_LOGD(TAG, "HasL2pckt: 0x7E?=0x%02X 0x656003FF?=0x%08X",
-                         btrdBuf[18], get_u32(btrdBuf + 19));
+                ESP_LOGD(TAG, "HasL2pckt: 0x7E?=0x%02X 0x656003FF?=0x%08lX",
+                         btrdBuf[18], (unsigned long)get_u32(btrdBuf + 19));
 
                 if (!hasL2pckt && btrdBuf[18] == 0x7E &&
                     get_u32(btrdBuf + 19) == 0x656003FF) {
@@ -804,8 +804,9 @@ E_RC ESP32_SMA_Inverter::getInverterDataCfl(uint32_t command, uint32_t first, ui
                         }
 
                         for (uint16_t ii = 41; ii < pcktBufPos - 3; ii += recordsize) {
-                            // Ensure the full record (up to offset +20) is within the buffer
-                            if (ii + 20 > pcktBufPos) {
+                            // 64-bit records (recsize=16) only read bytes 0-15; 32-bit records also read recptr+16
+                            uint16_t minBytes = (recordsize == 16) ? 16 : 20;
+                            if (ii + minBytes > pcktBufPos) {
                                 ESP_LOGW(TAG, "Record at %d exceeds pcktBufPos=%d, stopping", ii, pcktBufPos);
                                 break;
                             }
@@ -954,12 +955,12 @@ E_RC ESP32_SMA_Inverter::getInverterDataCfl(uint32_t command, uint32_t first, ui
                             case NameplateModel:
                                 value32 = getattribute(recptr);
                                 invData.DeviceType = value32;
-                                ESP_LOGI(TAG, "INV_TYPE %d", value32);
+                                ESP_LOGI(TAG, "INV_TYPE %ld", (long)value32);
                                 break;
                             case NameplateMainModel:
                                 value32 = getattribute(recptr);
                                 invData.DeviceClass = value32;
-                                ESP_LOGI(TAG, "INV_CLASS %d", value32);
+                                ESP_LOGI(TAG, "INV_CLASS %ld", (long)value32);
                                 break;
                             case CoolsysTmpNom:
                                 invData.InvTemp = value32;
@@ -969,12 +970,12 @@ E_RC ESP32_SMA_Inverter::getInverterDataCfl(uint32_t command, uint32_t first, ui
                             case OperationHealth:
                                 value32 = getattribute(recptr);
                                 invData.DevStatus = value32;
-                                ESP_LOGI(TAG, "DevStatus %d", value32);
+                                ESP_LOGI(TAG, "DevStatus %ld", (long)value32);
                                 break;
                             case OperationGriSwStt:
                                 value32 = getattribute(recptr);
                                 invData.GridRelay = value32;
-                                ESP_LOGI(TAG, "GridRelay %d", value32);
+                                ESP_LOGI(TAG, "GridRelay %ld", (long)value32);
                                 break;
                             case MeteringGridMsTotWOut:
                                 invData.MeteringGridMsTotWOut = value32;
@@ -1241,7 +1242,7 @@ void ESP32_SMA_Inverter::setInverterTime(bool force) {
     printUnixTime(timeBuf, invTime);
     invData.InverterTimestamp = std::string(timeBuf);
     ESP_LOGI(TAG, "setInverterTime: inverter clock = %s (UTC)", timeBuf);
-    ESP_LOGI(TAG, "setInverterTime: tz_dst=0x%08X timesetCount=%u", tz_dst, timesetCount);
+    ESP_LOGI(TAG, "setInverterTime: tz_dst=0x%08lX timesetCount=%lu", (unsigned long)tz_dst, (unsigned long)timesetCount);
 
     hosttime = time(nullptr);
 
