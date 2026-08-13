@@ -202,9 +202,9 @@ void SmaBluetoothSolar::update() {
 
     updateSensor(inverter_bluetooth_signal_strength_, "BTSignal",
                  smaInverter->dispData.BTSigStrength);
-    updateSensor(today_generation_time_,  "TToday",
+    updateSensor(total_operation_time_,  "OpTm",
                  (float)smaInverter->invData.OperationTime / 3600.0f);
-    updateSensor(total_generation_time_,  "TTotal",
+    updateSensor(total_feed_in_time_,    "FeedTm",
                  (float)smaInverter->invData.FeedInTime / 3600.0f);
     updateSensor(wakeup_time_,            "TWakeup",
                  (uint64_t)smaInverter->invData.WakeupTime);

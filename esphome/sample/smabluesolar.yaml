@@ -136,11 +136,11 @@ sensor:
     total_energy_production:
       name: "Total Energy Production"
 
-    today_generation_time:
-      name: "Today's Generation Time"
+    total_operation_time:
+      name: "Total Operation Time"
 
-    total_generation_time:
-      name: "Total Generation Time"
+    total_feed_in_time:
+      name: "Total Feed-In Time"
 
     wakeup_time:
       name: "Wakeup Time"
