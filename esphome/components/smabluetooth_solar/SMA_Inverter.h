@@ -293,6 +293,7 @@ class ESP32_SMA_Inverter {
 
     // Called from ESPHome setup()
     void setup(std::string mac, std::string pw, uint32_t delay_values_ms);
+    void setNightMargin(float minutes) { night_margin_min_ = minutes; }
 
     // Initialise ESP-IDF BT stack (non-blocking; fires BT_EVT_SPP_INIT asynchronously)
     bool begin(const char *localName);
