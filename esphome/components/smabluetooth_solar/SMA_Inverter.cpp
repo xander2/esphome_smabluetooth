@@ -1408,7 +1408,7 @@ void ESP32_SMA_Inverter::HexDump(uint8_t *buf, int count, int radix, uint8_t c) 
         }
         lp += sprintf(lp, " %02X", buf[i]);
     }
-    if (lp != line) ESP_LOGD(TAG, "%s", line);
+    if (lp != line) { ESP_LOGD(TAG, "%s", line); }
 }
 
 uint8_t ESP32_SMA_Inverter::printUnixTime(char *buf, time_t t) {
