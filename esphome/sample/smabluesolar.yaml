@@ -71,6 +71,22 @@ time:
     id: ha_time
 
 sensor:
+  # Read location from Home Assistant zone.home so latitude/longitude don't need
+  # to be duplicated in this YAML. Values are pushed to the inverter component at
+  # runtime whenever HA sends them (typically on connect and on zone change).
+  - platform: homeassistant
+    entity_id: zone.home
+    attribute: latitude
+    on_value:
+      then:
+        - lambda: 'id(sma_inverter).set_sma_inverter_latitude(x);'
+  - platform: homeassistant
+    entity_id: zone.home
+    attribute: longitude
+    on_value:
+      then:
+        - lambda: 'id(sma_inverter).set_sma_inverter_longitude(x);'
+
   - platform: smabluetooth_solar
     id: sma_inverter
     update_interval: 10s
@@ -80,6 +96,14 @@ sensor:
 
     # Margin after sunset before night mode engages (default 30min — extends sunset so readings drop to zero naturally)
     # sma_inverter_night_margin: 30min
+
+    # Location for accurate sunrise/sunset. Without these, solar noon is assumed at 12:00 local time —
+    # correct only at the timezone central meridian. Germany at 10°E in CEST (central meridian 30°E)
+    # has solar noon at ~13:20 CEST, making night mode trigger ~1h early without these set.
+    # Option A: read from Home Assistant (zone.home) — see sensor section below.
+    # Option B: static decimal degrees (east/north positive):
+    # sma_inverter_latitude:  52.0
+    # sma_inverter_longitude: 7.0
 
     inverter_status: 
       name: "Inverter Status"

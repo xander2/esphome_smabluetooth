@@ -87,7 +87,7 @@ bool ESP32_SMA_Inverter::is_nighttime() const {
     if (utc_offset >  12) utc_offset -= 24;
     if (utc_offset < -12) utc_offset += 24;
 
-    float lat_deg = latitude_from_utc_offset(utc_offset);
+    float lat_deg = latitude_configured_ ? latitude_deg_ : latitude_from_utc_offset(utc_offset);
     float lat_rad = lat_deg * (float)M_PI / 180.0f;
 
     int day_of_year = local_tm.tm_yday + 1; // 1..365
@@ -99,9 +99,25 @@ bool ESP32_SMA_Inverter::is_nighttime() const {
     if (cos_ha <= -1.0f) return false; // midnight sun
 
     float ha_hours = acosf(cos_ha) * (180.0f / (float)M_PI) / 15.0f;
+
+    if (longitude_configured_) {
+        // Anchor solar noon to the configured longitude in UTC:
+        //   solar noon UTC = 12:00 - longitude/15
+        // This eliminates the timezone-central-meridian error (e.g. Germany at 10°E in
+        // CEST (UTC+2, central meridian 30°E) has solar noon at ~13:20 CEST = 11:20 UTC,
+        // not 12:00 CEST as the fallback below would assume).
+        float solar_noon_utc = 12.0f - longitude_deg_ / 15.0f;
+        float utc_hours = gm_tm.tm_hour + gm_tm.tm_min / 60.0f;
+        float sunrise   = solar_noon_utc - ha_hours;
+        float sunset    = solar_noon_utc + ha_hours + night_margin_min_ / 60.0f;
+        return (utc_hours < sunrise) || (utc_hours > sunset);
+    }
+
+    // Fallback (no longitude configured): assume solar noon at 12:00 local time.
+    // Correct only at the central meridian of the device timezone; users away from
+    // the meridian will see sunset estimated up to ~1h early or late.
     float sunrise  = 12.0f - ha_hours;
     float sunset   = 12.0f + ha_hours + night_margin_min_ / 60.0f;
-
     float local_hours = local_tm.tm_hour + local_tm.tm_min / 60.0f;
     return (local_hours < sunrise) || (local_hours > sunset);
 }

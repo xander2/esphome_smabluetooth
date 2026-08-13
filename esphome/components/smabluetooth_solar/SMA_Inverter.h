@@ -293,7 +293,9 @@ class ESP32_SMA_Inverter {
 
     // Called from ESPHome setup()
     void setup(std::string mac, std::string pw, uint32_t delay_values_ms);
-    void setNightMargin(float minutes) { night_margin_min_ = minutes; }
+    void setNightMargin(float minutes)  { night_margin_min_ = minutes; }
+    void setLatitude(float deg)         { latitude_deg_ = deg;  latitude_configured_  = true; }
+    void setLongitude(float deg)        { longitude_deg_ = deg; longitude_configured_ = true; }
 
     // Initialise ESP-IDF BT stack (non-blocking; fires BT_EVT_SPP_INIT asynchronously)
     bool begin(const char *localName);
@@ -394,6 +396,10 @@ class ESP32_SMA_Inverter {
     char     smaInvPass[12];
     uint32_t delay_values_ms_   = 500;
     float    night_margin_min_  = 30.0f;  // minutes after sunset before night mode engages
+    float    latitude_deg_      = 50.0f;
+    float    longitude_deg_     = 0.0f;
+    bool     latitude_configured_  = false;
+    bool     longitude_configured_ = false;
 
     // ---- Packet buffers ----
     uint8_t  btrdBuf[COMMBUFSIZE];

@@ -96,6 +96,10 @@ void SmaBluetoothSolar::setup() {
                        sma_inverter_password_,
                        sma_inverter_delay_values_);
     smaInverter->setNightMargin(sma_inverter_night_margin_);
+    if (sma_inverter_latitude_configured_)
+        smaInverter->setLatitude(sma_inverter_latitude_);
+    if (sma_inverter_longitude_configured_)
+        smaInverter->setLongitude(sma_inverter_longitude_);
     hasSetup_ = true;
     ESP_LOGW(TAG, "Setup done, inverter mac=%s", sma_inverter_bluetooth_mac_.c_str());
 }

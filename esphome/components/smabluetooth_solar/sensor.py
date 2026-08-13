@@ -69,6 +69,8 @@ CONF_SMA_INVERTER_BLUETOOTH_MAC = "sma_inverter_bluetooth_mac"
 CONF_SMA_INVERTER_PASSWORD = "sma_inverter_password"
 CONF_SMA_INVERTER_DELAY_VALUES      = "sma_inverter_delay_values"
 CONF_SMA_INVERTER_NIGHT_MARGIN      = "sma_inverter_night_margin"
+CONF_SMA_INVERTER_LATITUDE          = "sma_inverter_latitude"
+CONF_SMA_INVERTER_LONGITUDE         = "sma_inverter_longitude"
 
 CONF_SMA_INVERTER_BLUETOOTH_SIGNAL_STRENGTH = "sma_inverter_bluetooth_signal_strength"
 
@@ -152,6 +154,8 @@ CONFIG_SCHEMA = (
             cv.Required(CONF_SMA_INVERTER_PASSWORD): cv.string,
             cv.Optional(CONF_SMA_INVERTER_DELAY_VALUES, default="200ms"): cv.positive_time_period_milliseconds,
             cv.Optional(CONF_SMA_INVERTER_NIGHT_MARGIN, default="30min"): cv.positive_time_period_milliseconds,
+            cv.Optional(CONF_SMA_INVERTER_LATITUDE):  cv.float_range(min=-90.0,  max=90.0),
+            cv.Optional(CONF_SMA_INVERTER_LONGITUDE): cv.float_range(min=-180.0, max=180.0),
 
             cv.Optional(CONF_SMA_INVERTER_BLUETOOTH_SIGNAL_STRENGTH): sensor.sensor_schema(
                 unit_of_measurement=UNIT_PERCENT,
@@ -243,6 +247,11 @@ async def to_code(config):
 
     if CONF_SMA_INVERTER_NIGHT_MARGIN in config:
         cg.add(var.set_sma_inverter_night_margin(config[CONF_SMA_INVERTER_NIGHT_MARGIN].total_seconds / 60.0))
+
+    if CONF_SMA_INVERTER_LATITUDE in config:
+        cg.add(var.set_sma_inverter_latitude(config[CONF_SMA_INVERTER_LATITUDE]))
+    if CONF_SMA_INVERTER_LONGITUDE in config:
+        cg.add(var.set_sma_inverter_longitude(config[CONF_SMA_INVERTER_LONGITUDE]))
 
     cg.add(var.set_protocol_version(config[CONF_PROTOCOL_VERSION]))
 
