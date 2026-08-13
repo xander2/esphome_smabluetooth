@@ -66,6 +66,10 @@ button:
     on_press:
       - lambda: 'id(sma_inverter).trigger_time_fetch();'
 
+time:
+  - platform: homeassistant
+    id: ha_time
+
 sensor:
   - platform: smabluetooth_solar
     id: sma_inverter

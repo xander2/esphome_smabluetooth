@@ -1224,9 +1224,9 @@ void ESP32_SMA_Inverter::fetchInverterTime() {
 void ESP32_SMA_Inverter::setInverterTime(bool force) {
     time_t hosttime = time(nullptr);
     if (hosttime < 946684800L) {  // before year 2000 — NTP not yet synced
-        ESP_LOGW(TAG, "setInverterTime: system clock not synced yet%s",
-                 force ? ", skipping" : ", will retry next cycle");
-        if (!force) sync_time_requested_ = true;  // auto calls retry; forced calls just skip
+        ESP_LOGW(TAG, "setInverterTime: system clock not synced yet, skipping%s",
+                 force ? " (add a 'time:' component to your YAML for NTP)" : ", will retry");
+        if (force) sync_time_requested_ = false;  // don't spam; user must press button again after NTP
         return;
     }
 
