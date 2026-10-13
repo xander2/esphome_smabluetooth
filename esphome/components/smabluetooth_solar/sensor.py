@@ -336,7 +336,14 @@ async def to_code(config):
                 cg.add(getattr(var, f"set_{sensor_type}_sensor_pv")(i, sens))
 
 
-    if CORE.using_arduino:
+    if CORE.using_esp_idf:
+        from esphome.components.esp32 import add_idf_sdkconfig_option, request_bluetooth
+        request_bluetooth()
+        add_idf_sdkconfig_option("CONFIG_BT_CLASSIC_ENABLED", True)
+        add_idf_sdkconfig_option("CONFIG_BT_SPP_ENABLED", True)
+        add_idf_sdkconfig_option("CONFIG_BTDM_CTRL_MODE_BR_EDR_ONLY", True)
+        add_idf_sdkconfig_option("CONFIG_BT_BLE_ENABLED", False)
+    elif CORE.using_arduino:
         if CORE.is_esp32 | CORE.is_esp8266:
             cg.add_library("BluetoothSerial", None)
 
