@@ -336,7 +336,7 @@ async def to_code(config):
                 cg.add(getattr(var, f"set_{sensor_type}_sensor_pv")(i, sens))
 
 
-    if CORE.using_esp_idf:
+    if CORE.target_framework == "esp-idf":
         from esphome.components.esp32 import add_idf_sdkconfig_option, request_bluetooth
         request_bluetooth()
         add_idf_sdkconfig_option("CONFIG_BT_CLASSIC_ENABLED", True)
